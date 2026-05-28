@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 
+from tests.helpers.assertions import assert_with_screenshot
+
 # Allow running this test file directly: `python tests/login_test.py`
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -37,7 +39,19 @@ def test_login():
         login_page = LoginPage(page)
 
         login_page.click_signup_link()
-        time.sleep(3)
+
+        page.wait_for_url("**/signup", timeout=15000)
+
+        assert_with_screenshot(
+            page,
+            condition=page.url == "https://storedemo.testdino.com/signup",
+            message=(
+                "Espected URL to be 'https://storedemo.testdino.com/signup'"
+                f"bus got '{page.url}'"
+            ),
+            name="signup_url_assert"
+        )
+
 
         assert page.url == "https://storedemo.testdino.com/signup", f"Expected URL to be 'https://storedemo.testdino.com/signup' but got '{page.url}'"
 
@@ -92,19 +106,35 @@ def test_login():
 
         products_page = ProductsPage(page)
         
-        # >>>>>>>>>>>>>> Agregar producto a favoritos
-        
-        products_page.agregar_a_favoritos(1)
+        products_page.agregar_a_favoritos(0)
+        time.sleep(2)
 
-        # products_page.wishlist_button_by_item("Rode NT1-A Condenser Mic").click()
+        products_page.agregar_a_favoritos(3)
 
-        # products_page.add_to_cart_button_by_item("Seagate 4TB External Hard Drive").click()
+        time.sleep(3)
 
-        assert products_page.validar_cantidad_favoritos(1), f"Cantidad espera 2 pero tuvo otra cantidad"
+        cantidad_favoritos = products_page.get_cantidad_favoritos()
+
+        assert cantidad_favoritos == "2", f"Cantidad espera 2 pero tuvo {cantidad_favoritos}"
+
+
+        products_page.agregar_al_carrito(0)     
+        time.sleep(2)
+
+        products_page.agregar_al_carrito(3)      
+        time.sleep(2)
+
+        products_page.agregar_al_carrito(4)
+        time.sleep(2)
+    
+        cantidad_carrito = products_page.get_cantidad_carrito()
+
+        assert cantidad_carrito == "3", f"Cantidad espera 3 pero tuvo {cantidad_carrito}"
+
 
         # Agregar producto a favoritos <<<<<<<<<<<<<
 
-        time.sleep(30)
+        time.sleep(10)
         
         browser.close()
 
