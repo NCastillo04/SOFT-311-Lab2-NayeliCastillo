@@ -1,9 +1,9 @@
 class HomePage: 
     def __init__(self, driver): 
         self.driver = driver 
-        self.logged_a = self.driver.locator('a[href="/logout"]')
+        self.login_button = self.driver.locator('svg[data-testid="header-user-icon"]')
 
-    def is_visible_logout(self):
-        self.logged_a.is_visible()
+    def click_login_button(self):
+        self.login_button.click()
         
   

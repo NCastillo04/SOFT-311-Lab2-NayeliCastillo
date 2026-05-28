@@ -8,88 +8,117 @@ from playwright.sync_api import sync_playwright
 from pages.login_page import LoginPage
 from pages.signup_page import SignupPage
 from pages.home_page import HomePage
+from pages.products_page import ProductsPage
 
 import time
 
-ts = 1
-
-def run() -> None:
+def test_login():
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=False)
         page = browser.new_page()
-        login = LoginPage(page)
 
-        # ------------------------------- en clase -------------------------------
-        
-        page.goto("https://www.automationexercise.com/login", wait_until="domcontentloaded")
-        
-        login.fill_signup_name("Naye")
-        time.sleep(ts)
-        
         email_last_int = int(time.time())
 
-        login.fill_email(f"naye{email_last_int}@example.com")
-        time.sleep(ts)
+        email_ = f"naye{email_last_int}@example.com"
+        password_ = "naye1234"
+
+        # >>>>>>>>>>>>>> Validar carga del Home
+        page.goto("https://storedemo.testdino.com", wait_until="domcontentloaded")
+
+        assert page.url == "https://storedemo.testdino.com/", f"Expected URL to be 'https://storedemo.testdino.com' but got '{page.url}'"
         
-        login.click_signup_button()
-        time.sleep(ts)
-        
-        ## validar url signup
-        assert page.url == "https://www.automationexercise.com/signup", f"Expected URL to be 'https://www.automationexercise.com/signup' but got '{page.url}'"
-        
-        
-        # ------------------------------- Laboratorio 2 -------------------------------
+        home_page = HomePage(page)
+
+        home_page.click_login_button()
+        time.sleep(3)
+
+        assert page.url == "https://storedemo.testdino.com/login", f"Expected URL to be 'https://storedemo.testdino.com/login' but got '{page.url}'"
+
+        login_page = LoginPage(page)
+
+        login_page.click_signup_link()
+        time.sleep(3)
+
+        assert page.url == "https://storedemo.testdino.com/signup", f"Expected URL to be 'https://storedemo.testdino.com/signup' but got '{page.url}'"
+
+        # >>>>>>>>>>>>> Registro de usuario
 
         signup_page = SignupPage(page)
 
-        signup_page.check_genero1()
-
-        signup_page.fill_name("Naye")
-        # signup_page.fill_email(f"naye{email_last_int}@example.com")
-        signup_page.fill_password("hola")
-
-        signup_page.select_date("4")
-        signup_page.select_month("6")
-        signup_page.select_year("2002")
-
-        # valida la fecha completa selccionada
-        assert signup_page.get_full_date_of_birth() == "4/6/2002"
-
-        signup_page.toggle_newsletter(True)
-
         signup_page.fill_first_name("Nayeli")
         signup_page.fill_last_name("Castillo")
-        signup_page.fill_company("Hola S.A.")
-        signup_page.fill_address("Cartago")
-        signup_page.fill_address2("Paraiso")
-        signup_page.select_country("Canada")
-        signup_page.fill_state("San Jose")
-        signup_page.fill_city("San Jose")
-        signup_page.fill_zipcode("3032")
-        signup_page.fill_mobile_number("64779630")
-        signup_page.click_create_account_button()
+        signup_page.fill_email_address(email_)
+        signup_page.fill_password(password_)
+
+        signup_page.click_signup_button()
+
+        # time.sleep(10) 
+
+        # AL crear el user con los credenciales se dirigue automaticamente, por eso se valida contra la url
+        # assert page.url == "https://storedemo.testdino.com/login", f"Expected URL to be 'https://storedemo.testdino.com/login' but got '{page.url}'"
+        
+        # Registro de usuario <<<<<<<<<<<<
 
         time.sleep(5)
 
-        # Registro de usuario - listo
-        assert page.url == "https://www.automationexercise.com/account_created", f"Expected URL to be 'https://www.automationexercise.com/account_created' but got '{page.url}'"
+        # >>>>>>>>>>>>>> Login válido
+
+        login_page.fill_email(email_)
+        time.sleep(1)
+        
+        login_page.fill_password(password_)
+        time.sleep(1)
+        
+        login_page.click_signup_button()
+        
+        page.wait_for_url("https://storedemo.testdino.com/")
+
+        # Se valida que se haya logeado bien y haya ido al home
+        assert page.url == "https://storedemo.testdino.com/", f"Expected URL to be 'https://storedemo.testdino.com' but got '{page.url}'"
+
+        time.sleep(3)
+
+        home_page.click_login_button()
+   
+        page.wait_for_url("https://storedemo.testdino.com/account")
+
+        assert page.url == "https://storedemo.testdino.com/account", f"Expected URL to be 'https://storedemo.testdino.com/account' but got '{page.url}'"
+        # Login válido <<<<<<<<<<<<
+
+        time.sleep(3)
 
 
-        page.goto("https://www.automationexercise.com", wait_until="domcontentloaded")
+        page.goto("https://storedemo.testdino.com/products", wait_until="domcontentloaded")
 
-        time.sleep(5)
+        products_page = ProductsPage(page)
+        
+        # >>>>>>>>>>>>>> Agregar producto a favoritos
+        
+        products_page.agregar_a_favoritos(1)
 
-        # Validar carga del Home - listo
-        assert page.url == "https://www.automationexercise.com/", f"Expected URL to be 'https://www.automationexercise.com/' but got '{page.url}'"
+        # products_page.wishlist_button_by_item("Rode NT1-A Condenser Mic").click()
 
-        home_page = HomePage(page)
+        # products_page.add_to_cart_button_by_item("Seagate 4TB External Hard Drive").click()
 
-        # Validacion de login existo despues del registro
-        assert home_page.is_visible_logout()
+        assert products_page.validar_cantidad_favoritos(1), f"Cantidad espera 2 pero tuvo otra cantidad"
 
-        time.sleep(6)
+        # Agregar producto a favoritos <<<<<<<<<<<<<
+
+        time.sleep(30)
+        
         browser.close()
 
 
-if __name__ == "__main__":
-    run()
+# if __name__ == "__main__":
+#    run()
+
+
+
+# .venv\Scripts\python -m pip install pytest-html
+
+# .venv\Scripts\python -m pytest --html=report.html --self-contained-html
+
+# cart.add_product(productos.nth(0))
+
+
+# EJECUTAR ASI: .venv\Scripts\python -m pytest -v

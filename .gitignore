@@ -1,0 +1,7 @@
+playwright_automation_base.egg-info/
+__pycache__/
+dist/
+.venv/
+.vscode/
+.pytest_cache/
+
