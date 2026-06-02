@@ -21,5 +21,5 @@ py -m venv .venv
 # Ejecucion
 
 ```py
-.venv\Scripts\python -m pytest -v
+.venv\Scripts\python -m pytest --html=report.html --self-contained-html
 ```
