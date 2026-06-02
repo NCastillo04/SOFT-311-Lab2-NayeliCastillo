@@ -179,11 +179,3 @@ def test_login():
         time.sleep(10)
         
         browser.close()
-
-
-# .venv\Scripts\python -m pytest --html=report.html --self-contained-html
-
-# cart.add_product(productos.nth(0))
-
-
-# EJECUTAR ASI: .venv\Scripts\python -m pytest -v
