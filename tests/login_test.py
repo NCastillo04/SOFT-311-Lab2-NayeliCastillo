@@ -27,14 +27,30 @@ def test_login():
         # >>>>>>>>>>>>>> Validar carga del Home
         page.goto("https://storedemo.testdino.com", wait_until="domcontentloaded")
 
-        assert page.url == "https://storedemo.testdino.com/", f"Expected URL to be 'https://storedemo.testdino.com' but got '{page.url}'"
-        
+        assert_with_screenshot(
+            page,
+            condition=page.url == "https://storedemo.testdino.com/",
+            message=(
+                "Espected URL to be 'https://storedemo.testdino.com/'"
+                f"bus got '{page.url}'"
+            ),
+            name="home_url_assert"
+        )
+
         home_page = HomePage(page)
 
         home_page.click_login_button()
         time.sleep(3)
 
-        assert page.url == "https://storedemo.testdino.com/login", f"Expected URL to be 'https://storedemo.testdino.com/login' but got '{page.url}'"
+        assert_with_screenshot(
+            page,
+            condition=page.url == "https://storedemo.testdino.com/login",
+            message=(
+                "Expected URL to be 'https://storedemo.testdino.com/login' "
+                f"but got '{page.url}'"
+            ),
+            name="login_url_assert"
+        )
 
         login_page = LoginPage(page)
 
@@ -51,9 +67,6 @@ def test_login():
             ),
             name="signup_url_assert"
         )
-
-
-        assert page.url == "https://storedemo.testdino.com/signup", f"Expected URL to be 'https://storedemo.testdino.com/signup' but got '{page.url}'"
 
         # >>>>>>>>>>>>> Registro de usuario
 
@@ -88,7 +101,15 @@ def test_login():
         page.wait_for_url("https://storedemo.testdino.com/")
 
         # Se valida que se haya logeado bien y haya ido al home
-        assert page.url == "https://storedemo.testdino.com/", f"Expected URL to be 'https://storedemo.testdino.com' but got '{page.url}'"
+        assert_with_screenshot(
+            page,
+            condition=page.url == "https://storedemo.testdino.com/",
+            message=(
+                "Expected URL to be 'https://storedemo.testdino.com/' "
+                f"but got '{page.url}'"
+            ),
+            name="home_url_assert"
+        )
 
         time.sleep(3)
 
@@ -96,11 +117,18 @@ def test_login():
    
         page.wait_for_url("https://storedemo.testdino.com/account")
 
-        assert page.url == "https://storedemo.testdino.com/account", f"Expected URL to be 'https://storedemo.testdino.com/account' but got '{page.url}'"
+        assert_with_screenshot(
+            page,
+            condition=page.url == "https://storedemo.testdino.com/account",
+            message=(
+                "Expected URL to be 'https://storedemo.testdino.com/account' "
+                f"but got '{page.url}'"
+            ),
+            name="account_url_assert"
+        )        
         # Login válido <<<<<<<<<<<<
 
         time.sleep(3)
-
 
         page.goto("https://storedemo.testdino.com/products", wait_until="domcontentloaded")
 
@@ -115,8 +143,15 @@ def test_login():
 
         cantidad_favoritos = products_page.get_cantidad_favoritos()
 
-        assert cantidad_favoritos == "2", f"Cantidad espera 2 pero tuvo {cantidad_favoritos}"
-
+        assert_with_screenshot(
+            page,
+            condition=cantidad_favoritos == "2",
+            message=(
+                "Cantidad esperada: 2 "
+                f"pero obtuvo {cantidad_favoritos}"
+            ),
+            name="favorites_count_assert"
+        )
 
         products_page.agregar_al_carrito(0)     
         time.sleep(2)
@@ -129,8 +164,15 @@ def test_login():
     
         cantidad_carrito = products_page.get_cantidad_carrito()
 
-        assert cantidad_carrito == "3", f"Cantidad espera 3 pero tuvo {cantidad_carrito}"
-
+        assert_with_screenshot(
+            page,
+            condition=cantidad_carrito == "3",
+            message=(
+                "Cantidad esperada: 3 "
+                f"pero obtuvo {cantidad_carrito}"
+            ),
+            name="cart_count_assert"
+        )
 
         # Agregar producto a favoritos <<<<<<<<<<<<<
 
@@ -138,13 +180,6 @@ def test_login():
         
         browser.close()
 
-
-# if __name__ == "__main__":
-#    run()
-
-
-
-# .venv\Scripts\python -m pip install pytest-html
 
 # .venv\Scripts\python -m pytest --html=report.html --self-contained-html
 
